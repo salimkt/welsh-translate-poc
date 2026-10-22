@@ -2,145 +2,331 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Cyfieithu · Welsh Translate</title>
+<meta name="description" content="Translate between Welsh and English, with live dictation.">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='7' fill='%23c8102e'/><text x='16' y='22' font-size='16' text-anchor='middle' fill='white' font-family='sans-serif' font-weight='700'>cy</text></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap">
 <style>
-:root{color-scheme:light dark;
-  --bg:#f6f6f4;--panel:#fff;--ink:#1b1d21;--muted:#6a6f78;--line:#e3e3df;
-  --accent:#c8102e;--accent-ink:#fff;--ok:#1f8a4c;--warn:#b26b00;--err:#c0392b;
-  --field:#fbfbfa;--shadow:0 1px 2px rgba(0,0,0,.05),0 4px 16px rgba(0,0,0,.04);
+:root{color-scheme:light;
+  --bg:#f5f5f3;--panel:#ffffff;--panel-2:#fafaf8;--ink:#17191c;--ink-2:#3d4148;--muted:#646a73;--line:#e4e4e0;--line-2:#d6d6d1;
+  --accent:#c8102e;--accent-ink:#fff;--accent-soft:#fbe9ec;--ok:#16794a;--ok-soft:#e5f4ec;--warn:#8a5300;--warn-soft:#fdf2df;--err:#b42318;--err-soft:#fdecea;
+  --hl:#fff3c4;--focus:#2563eb;--shadow:0 1px 2px rgba(16,18,22,.04),0 8px 24px rgba(16,18,22,.06);
+  --shimmer:rgba(200,16,46,.07);--r:16px;
 }
-@media (prefers-color-scheme:dark){:root{
-  --bg:#141518;--panel:#1c1e22;--ink:#e9eaec;--muted:#9097a1;--line:#2d3036;
-  --accent:#e0344f;--field:#17191c;--shadow:none;
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){color-scheme:dark;
+  --bg:#111214;--panel:#1a1c1f;--panel-2:#16181b;--ink:#ececee;--ink-2:#c9cbd0;--muted:#9aa0a9;--line:#2b2e33;--line-2:#3a3e45;
+  --accent:#e8445e;--accent-ink:#fff;--accent-soft:#3a1a20;--ok:#4cc38a;--ok-soft:#173326;--warn:#f0b357;--warn-soft:#3a2c14;--err:#ff7b72;--err-soft:#3d1c1a;
+  --hl:#4a3f12;--focus:#7aa2ff;--shadow:none;--shimmer:rgba(232,68,94,.10);
 }}
 *{box-sizing:border-box}
-body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.5 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
-header{display:flex;flex-wrap:wrap;align-items:center;gap:12px;padding:14px 20px;border-bottom:1px solid var(--line);background:var(--panel)}
-header h1{font-size:17px;margin:0;font-weight:650;letter-spacing:-.01em}
-header .sub{color:var(--muted);font-size:13px}
-header .sp{flex:1}
-.dot{width:8px;height:8px;border-radius:50%;background:var(--muted);display:inline-block;margin-right:6px}
-.dot.ok{background:var(--ok)}.dot.err{background:var(--err)}.dot.wait{background:var(--warn)}
-.status{font-size:13px;color:var(--muted);display:flex;gap:14px;align-items:center}
-main{max-width:1200px;margin:0 auto;padding:20px 16px 40px}
-.bar{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-bottom:14px}
-.seg{display:inline-flex;border:1px solid var(--line);border-radius:9px;overflow:hidden;background:var(--panel)}
-.seg button{border:0;background:none;padding:7px 14px;color:var(--ink);cursor:pointer;font:inherit;font-size:14px}
-.seg button.on{background:var(--ink);color:var(--bg)}
-button.btn{border:1px solid var(--line);background:var(--panel);color:var(--ink);padding:7px 14px;border-radius:9px;font:inherit;font-size:14px;cursor:pointer}
-button.btn:hover{border-color:var(--muted)}
-button.primary{background:var(--accent);border-color:var(--accent);color:var(--accent-ink);font-weight:600}
-button.primary:hover{filter:brightness(1.08);border-color:var(--accent)}
-button:disabled{opacity:.5;cursor:not-allowed}
-.grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
-@media (max-width:820px){.grid{grid-template-columns:1fr}}
-.card{background:var(--panel);border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow);display:flex;flex-direction:column;min-height:360px}
-.card .hd{display:flex;align-items:center;gap:10px;padding:10px 14px;border-bottom:1px solid var(--line)}
-.card .hd b{font-size:14px}
-.card .hd .meta{color:var(--muted);font-size:12.5px;margin-left:auto}
-textarea{flex:1;border:0;outline:0;resize:vertical;min-height:300px;padding:14px;font:inherit;font-size:16.5px;line-height:1.55;background:var(--field);color:var(--ink);border-radius:0 0 14px 14px}
-.card .ft{display:flex;gap:8px;align-items:center;padding:8px 12px;border-top:1px solid var(--line);font-size:13px;color:var(--muted)}
-.mic{display:inline-flex;align-items:center;gap:8px}
-.mic.live{background:var(--accent);border-color:var(--accent);color:#fff}
-.meter{width:70px;height:6px;border-radius:3px;background:var(--line);overflow:hidden}
-.meter i{display:block;height:100%;width:0;background:var(--ok);transition:width .08s}
-.interim{color:var(--muted);font-style:italic;font-size:13px;min-height:1.4em;padding:0 14px 6px}
-details{margin-top:18px;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:10px 14px}
-summary{cursor:pointer;font-weight:600;font-size:14px}
-.cfg{display:grid;grid-template-columns:170px 1fr auto;gap:8px 10px;align-items:center;margin-top:12px}
-@media (max-width:600px){.cfg{grid-template-columns:1fr}}
-.cfg label{font-size:13px;color:var(--muted)}
-.cfg input{width:100%;padding:7px 10px;border:1px solid var(--line);border-radius:8px;background:var(--field);color:var(--ink);font:inherit;font-size:14px}
-.note{font-size:12.5px;color:var(--muted);margin-top:10px}
-.warn{color:var(--warn)}
-.toggle{display:inline-flex;align-items:center;gap:6px;font-size:13.5px;color:var(--muted);cursor:pointer;user-select:none}
-.err-banner{display:none;margin-bottom:12px;padding:9px 14px;border-radius:10px;background:color-mix(in srgb,var(--err) 12%,transparent);color:var(--err);font-size:14px}
-.spin{width:12px;height:12px;border:2px solid var(--line);border-top-color:var(--accent);border-radius:50%;animation:s .7s linear infinite;display:none}
-@keyframes s{to{transform:rotate(360deg)}}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.5 Inter,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;-webkit-font-smoothing:antialiased}
+button,select,input,textarea{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--focus);outline-offset:2px}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+
+/* header */
+header{display:flex;align-items:center;gap:10px;padding:12px max(16px,env(safe-area-inset-left));max-width:1200px;margin:0 auto}
+.brand{display:flex;align-items:center;gap:10px;flex:none}
+.logo{width:30px;height:30px;border-radius:8px;background:var(--accent);color:#fff;display:grid;place-items:center;font-weight:700;font-size:14px;flex:none}
+.brand h1{font-size:17px;margin:0;font-weight:650;letter-spacing:-.01em;white-space:nowrap}
+.brand .sub{color:var(--muted);font-size:13px;white-space:nowrap}
+.sp{flex:1}
+.pill{display:inline-flex;align-items:center;gap:7px;border:1px solid var(--line);background:var(--panel);border-radius:999px;padding:5px 12px 5px 10px;font-size:13px;cursor:pointer;color:var(--ink-2);white-space:nowrap}
+.pill:hover{border-color:var(--line-2)}
+.pill .d{width:8px;height:8px;border-radius:50%;background:var(--muted)}
+.pill.ok .d{background:var(--ok)}.pill.warn .d{background:var(--warn)}.pill.err{color:var(--err);border-color:color-mix(in srgb,var(--err) 35%,var(--line));background:var(--err-soft)}.pill.err .d{background:var(--err)}
+.pill.wait .d{animation:blink 1s ease-in-out infinite}
+@keyframes blink{50%{opacity:.3}}
+.icon-btn{width:38px;height:38px;border-radius:10px;border:1px solid transparent;background:none;display:grid;place-items:center;cursor:pointer;color:var(--ink-2);flex:none}
+.icon-btn:hover{background:var(--panel);border-color:var(--line)}
+.icon-btn svg{width:20px;height:20px}
+
+main{max-width:1200px;margin:0 auto;padding:4px 16px 48px}
+
+/* language bar */
+.langbar{display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);align-items:center;gap:8px;background:var(--panel);border:1px solid var(--line);border-radius:var(--r) var(--r) 0 0;padding:8px 10px;border-bottom:0}
+.lang{display:flex;align-items:center;gap:8px;min-width:0}
+.lang.t{justify-content:flex-start}
+.selwrap{position:relative;min-width:0;max-width:100%}
+.selwrap select{appearance:none;-webkit-appearance:none;border:0;background:transparent;font-size:16px;font-weight:600;padding:8px 30px 8px 10px;border-radius:10px;cursor:pointer;width:auto;max-width:100%;text-overflow:ellipsis;overflow:hidden;white-space:nowrap;color:var(--ink)}
+.selwrap select:hover{background:var(--panel-2)}
+.selwrap::after{content:"";position:absolute;right:12px;top:50%;width:7px;height:7px;border-right:2px solid var(--muted);border-bottom:2px solid var(--muted);transform:translateY(-70%) rotate(45deg);pointer-events:none}
+.detected{font-size:12.5px;color:var(--ok);background:var(--ok-soft);padding:2px 8px;border-radius:999px;white-space:nowrap;display:none;max-width:100%;overflow:hidden;text-overflow:ellipsis}
+.detected.on{display:inline-block}
+.swap{width:40px;height:40px;border-radius:50%;border:1px solid var(--line);background:var(--panel);cursor:pointer;display:grid;place-items:center;color:var(--ink-2);transition:transform .25s}
+.swap:hover{border-color:var(--line-2);background:var(--panel-2)}
+.swap.spin{transform:rotate(180deg)}
+.swap svg{width:18px;height:18px}
+
+/* panels */
+.panels{display:grid;grid-template-columns:1fr 1fr;border:1px solid var(--line);border-radius:0 0 var(--r) var(--r);background:var(--panel);box-shadow:var(--shadow)}
+.panel{position:relative;display:flex;flex-direction:column;min-width:0;min-height:340px}
+.panel.src{border-right:1px solid var(--line)}
+.panel.tgt{background:var(--panel-2);border-radius:0 0 var(--r) 0}
+.panel textarea{flex:1;width:100%;border:0;outline:0;resize:none;min-height:230px;padding:18px 20px 8px;font-size:20px;line-height:1.5;background:transparent;color:var(--ink);transition:background-color .6s}
+.panel textarea::placeholder{color:var(--muted);opacity:.8}
+.panel textarea:focus-visible{outline:none}
+.panel:focus-within{box-shadow:inset 0 0 0 2px color-mix(in srgb,var(--focus) 35%,transparent)}
+.panel.src:focus-within{border-radius:0 0 0 var(--r)}
+.panel textarea.flash{background:var(--hl);transition:none}
+.clear{position:absolute;top:10px;right:10px;display:none}
+.clear.on{display:grid}
+.ft{display:flex;align-items:center;gap:8px;padding:8px 12px 12px 16px;font-size:12.5px;color:var(--muted);min-height:52px;flex-wrap:wrap}
+.ft .count{font-variant-numeric:tabular-nums}
+#tgtCount:not(:empty)+#tInfo:not(:empty)::before{content:"· "}
+.btn{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line);background:var(--panel);padding:7px 12px;border-radius:10px;font-size:14px;cursor:pointer;color:var(--ink-2);white-space:nowrap}
+.btn:hover{border-color:var(--line-2)}
+.btn svg{width:16px;height:16px}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:var(--accent-ink);font-weight:600}
+.btn.primary:hover{filter:brightness(1.07)}
+.btn.ghost{border-color:transparent;background:none}
+.btn.ghost:hover{background:var(--panel);border-color:var(--line)}
+.btn.done{color:var(--ok);border-color:color-mix(in srgb,var(--ok) 40%,var(--line))}
+button:disabled{opacity:.45;cursor:not-allowed}
+kbd{font:11px/1 ui-monospace,SFMono-Regular,Menlo,monospace;border:1px solid var(--line-2);border-bottom-width:2px;border-radius:4px;padding:2px 4px;color:var(--muted);background:var(--panel)}
+
+/* empty state */
+.empty{padding:0 20px 8px;display:flex;flex-wrap:wrap;gap:8px;align-items:center;font-size:13px;color:var(--muted)}
+.empty[hidden]{display:none}
+.chip{border:1px solid var(--line);background:var(--panel-2);border-radius:999px;padding:6px 12px;font-size:14px;cursor:pointer;color:var(--ink-2);text-align:left}
+.chip:hover{border-color:var(--line-2);background:var(--panel)}
+.chip small{color:var(--muted);font-size:11px;font-weight:600;letter-spacing:.04em;margin-right:6px}
+.tgt-empty{position:absolute;left:20px;right:20px;top:18px;color:var(--muted);font-size:20px;pointer-events:none;opacity:.7}
+
+/* added chip */
+.added{position:absolute;left:20px;right:20px;bottom:64px;display:flex;justify-content:flex-start;pointer-events:none}
+.added span{background:var(--ink);color:var(--bg);font-size:13px;padding:5px 10px;border-radius:999px;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;box-shadow:var(--shadow);animation:pop 2.4s ease forwards}
+@keyframes pop{0%{opacity:0;transform:translateY(6px)}10%,75%{opacity:1;transform:none}100%{opacity:0;transform:translateY(-4px)}}
+
+/* mic dock */
+.dock{display:flex;align-items:center;gap:14px;padding:6px 16px 4px;flex-wrap:wrap}
+.mic{position:relative;width:64px;height:64px;border-radius:50%;border:0;cursor:pointer;background:var(--accent-soft);color:var(--accent);display:grid;place-items:center;flex:none;transition:background .2s,transform .1s}
+.mic:hover{filter:brightness(.97)}
+.mic:active{transform:scale(.96)}
+.mic svg{width:28px;height:28px}
+.mic .stop{display:none;width:20px;height:20px;border-radius:4px;background:#fff}
+.mic.live{background:var(--accent);color:#fff}
+.mic.live svg{display:none}.mic.live .stop{display:block}
+.mic.live::before,.mic.live::after{content:"";position:absolute;inset:0;border-radius:50%;border:2px solid var(--accent);animation:ring 1.6s ease-out infinite;pointer-events:none}
+.mic.live::after{animation-delay:.8s}
+@keyframes ring{from{transform:scale(1);opacity:.6}to{transform:scale(1.6);opacity:0}}
+.mic.blocked{background:var(--err-soft);color:var(--err)}
+.mstat{display:flex;flex-direction:column;gap:2px;min-width:0;flex:1}
+.mstat .l1{display:flex;align-items:center;gap:10px;font-size:15px;font-weight:600;color:var(--ink)}
+.mstat .l2{font-size:12.5px;color:var(--muted)}
+.mstat .l2.err{color:var(--err)}
+.bars{display:none;align-items:center;gap:3px;height:22px}
+.bars i{display:block;width:4px;height:4px;border-radius:2px;background:var(--accent);transition:height .08s}
+.dock.live .bars{display:inline-flex}
+.time{font-variant-numeric:tabular-nums;color:var(--muted);font-weight:500;font-size:13px;display:none}
+.dock.live .time{display:inline}
+.tx{display:none;align-items:center;gap:6px;font-size:12.5px;color:var(--muted);font-weight:500}
+.tx.on{display:inline-flex}
+.spinner{width:13px;height:13px;border:2px solid var(--line-2);border-top-color:var(--accent);border-radius:50%;animation:rot .7s linear infinite;flex:none}
+@keyframes rot{to{transform:rotate(360deg)}}
+.hint{margin:4px 16px 0;padding:8px 12px;border-radius:10px;background:var(--warn-soft);color:var(--warn);font-size:13px;display:none}
+.hint.on{display:block}
+.hint button{border:0;background:none;color:inherit;text-decoration:underline;cursor:pointer;padding:0;font-size:inherit}
+
+/* shimmer while translating */
+.panel.tgt::after{content:"";position:absolute;inset:0;pointer-events:none;opacity:0;transition:opacity .2s;border-radius:inherit;
+  background:linear-gradient(100deg,transparent 30%,var(--shimmer) 50%,transparent 70%);background-size:220% 100%}
+.panel.tgt.busy::after{opacity:1;animation:shim 1.3s linear infinite}
+@keyframes shim{from{background-position:120% 0}to{background-position:-120% 0}}
+.panel.tgt.busy textarea{opacity:.55}
+.busy-lbl{display:none;color:var(--accent);font-weight:500}
+.panel.tgt.busy .busy-lbl{display:inline}
+
+.tips{margin:14px 4px 0;font-size:12.5px;color:var(--muted);display:flex;gap:16px;flex-wrap:wrap}
+
+/* toast */
+.toasts{position:fixed;left:50%;bottom:max(20px,env(safe-area-inset-bottom));transform:translateX(-50%);display:flex;flex-direction:column;gap:8px;z-index:50;width:min(520px,calc(100% - 32px));pointer-events:none}
+.toast{background:var(--ink);color:var(--bg);padding:10px 14px;border-radius:12px;font-size:14px;box-shadow:0 8px 24px rgba(0,0,0,.2);pointer-events:auto;display:flex;gap:10px;align-items:flex-start;animation:tin .2s ease}
+.toast.err{background:var(--err);color:#fff}
+.toast button{margin-left:auto;border:0;background:none;color:inherit;cursor:pointer;opacity:.8;font-size:16px;line-height:1;padding:0 2px}
+@keyframes tin{from{opacity:0;transform:translateY(8px)}}
+
+/* settings dialog */
+dialog{border:1px solid var(--line);border-radius:18px;background:var(--panel);color:var(--ink);padding:0;width:min(560px,calc(100% - 24px));box-shadow:0 24px 60px rgba(0,0,0,.25)}
+dialog::backdrop{background:rgba(10,12,16,.45)}
+.dlg-hd{display:flex;align-items:center;padding:16px 18px 6px}
+.dlg-hd h2{margin:0;font-size:17px;font-weight:650}
+.dlg-bd{padding:6px 18px 18px;display:flex;flex-direction:column;gap:14px}
+.field label{display:block;font-size:13px;font-weight:600;color:var(--ink-2);margin-bottom:5px}
+.field .row{display:flex;gap:8px;align-items:center}
+.field input{flex:1;min-width:0;width:100%;padding:9px 11px;border:1px solid var(--line-2);border-radius:10px;background:var(--panel-2);font-size:16px}
+.field .help{font-size:12.5px;color:var(--muted);margin-top:4px}
+.svc{font-size:12.5px;display:flex;align-items:center;gap:6px;margin-top:5px;color:var(--muted);word-break:break-word}
+.svc .d{width:8px;height:8px;border-radius:50%;background:var(--muted);flex:none}
+.svc.ok .d{background:var(--ok)}.svc.err{color:var(--err)}.svc.err .d{background:var(--err)}.svc.wait .d{background:var(--warn)}
+.switch{display:flex;align-items:center;gap:10px;font-size:14px;cursor:pointer}
+.switch input{width:18px;height:18px;accent-color:var(--accent)}
+.note{font-size:12.5px;color:var(--muted);margin:0;padding:10px 12px;border-radius:10px;background:var(--panel-2);border:1px solid var(--line)}
+
+@media (max-width:760px){
+  .brand .sub{display:none}
+  .panels{grid-template-columns:1fr}
+  .panel.src{border-right:0;border-bottom:1px solid var(--line)}
+  .panel.src:focus-within{border-radius:0}
+  .panel.tgt{border-radius:0 0 var(--r) var(--r)}
+  .panel{min-height:0}
+  .panel textarea{min-height:150px;font-size:18px;padding:14px 16px 6px}
+  .tgt-empty{font-size:18px;left:16px;top:14px}
+  .langbar{padding:6px}
+  .selwrap select{font-size:16px;padding:8px 26px 8px 8px}
+  .selwrap::after{right:10px}
+  .lang{flex-direction:column;align-items:flex-start;gap:0}
+  .lang.t{align-items:flex-start}
+  .detected{margin-left:8px;margin-bottom:4px}
+  .dock{position:sticky;bottom:0;background:var(--panel);padding:10px 16px calc(10px + env(safe-area-inset-bottom));border-top:1px solid var(--line);z-index:5}
+  .mic{width:60px;height:60px}
+  .tips{display:none}
+  .added{bottom:96px}
+  .empty{padding:0 16px 8px}
+}
+@media (max-width:400px){ .brand h1{display:none} .ft{padding-left:12px} }
+@media (prefers-reduced-motion:reduce){*{animation-duration:.01ms!important;animation-iteration-count:1!important;transition:none!important}}
 </style>
 </head>
 <body>
 <header>
-  <h1>Cyfieithu</h1><span class="sub">Welsh ⇄ English · live speech · POC</span>
-  <span class="sp"></span>
-  <div class="status">
-    <span id="stT"><span class="dot"></span>Translate</span>
-    <span id="stA"><span class="dot"></span>Speech</span>
+  <div class="brand">
+    <div class="logo" aria-hidden="true">cy</div>
+    <h1>Cyfieithu</h1><span class="sub">Welsh ⇄ English translator</span>
   </div>
+  <span class="sp"></span>
+  <button class="pill wait" id="pill" type="button" aria-label="Connection status: checking. Open settings">
+    <span class="d" aria-hidden="true"></span><span id="pillTxt">Checking…</span>
+  </button>
+  <button class="icon-btn" id="gear" type="button" aria-label="Settings" title="Settings">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+  </button>
 </header>
 
 <main>
-  <div class="err-banner" id="err"></div>
-
-  <div class="bar">
-    <div class="seg" id="dir">
-      <button data-d="en-cy" class="on">English → Cymraeg</button>
-      <button data-d="cy-en">Cymraeg → English</button>
+  <div class="langbar" role="group" aria-label="Languages">
+    <div class="lang s">
+      <div class="selwrap">
+        <select id="srcLang" aria-label="Source language">
+          <option value="auto">Detect language</option>
+          <option value="en">English</option>
+          <option value="cy">Cymraeg</option>
+        </select>
+      </div>
+      <span class="detected" id="detected" aria-live="polite"></span>
     </div>
-    <button class="btn" id="swap" title="Swap direction and texts">⇄ Swap</button>
-    <span class="sp" style="flex:1"></span>
-    <label class="toggle"><input type="checkbox" id="auto" checked> Auto-translate</label>
-    <button class="btn primary" id="go">Translate <span class="spin" id="spin"></span></button>
+    <button class="swap" id="swap" type="button" aria-label="Swap languages and texts" title="Swap languages and texts">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 4 3 8l4 4"/><path d="M3 8h14"/><path d="m17 20 4-4-4-4"/><path d="M21 16H7"/></svg>
+    </button>
+    <div class="lang t">
+      <div class="selwrap">
+        <select id="tgtLang" aria-label="Target language">
+          <option value="cy">Cymraeg</option>
+          <option value="en">English</option>
+        </select>
+      </div>
+    </div>
   </div>
 
-  <div class="grid">
-    <section class="card">
-      <div class="hd">
-        <b id="srcLbl">English</b>
-        <button class="btn mic" id="mic" title="Live transcription">🎙 <span id="micTxt">Start mic</span></button>
-        <span class="meter"><i id="lvl"></i></span>
-        <span class="meta" id="srcMeta">0 chars</span>
+  <div class="panels">
+    <section class="panel src" aria-label="Source text">
+      <label for="src" class="sr">Text to translate</label>
+      <textarea id="src" spellcheck="true" placeholder="Type or paste English or Welsh…&#10;or tap the mic and speak."></textarea>
+      <button class="icon-btn clear" id="clear" type="button" aria-label="Clear text" title="Clear">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12"/></svg>
+      </button>
+      <div class="empty" id="empty">
+        <span>Try:</span>
+        <button class="chip" type="button" data-ex="Good morning! Could you tell me where the train station is?"><small>EN</small>Good morning! Where is the train station?</button>
+        <button class="chip" type="button" data-ex="Bore da, sut wyt ti heddiw?"><small>CY</small>Bore da, sut wyt ti heddiw?</button>
       </div>
-      <div class="interim" id="interim"></div>
-      <textarea id="src" placeholder="Type, paste, or press “Start mic” to dictate…"></textarea>
+      <div class="added" id="added" aria-hidden="true"></div>
+      <div class="hint" id="hint" role="note"></div>
+      <div class="dock" id="dock">
+        <button class="mic" id="mic" type="button" aria-label="Start dictation" aria-pressed="false" title="Dictate (Space or Ctrl+M)">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="2.5" width="6" height="12" rx="3"/><path d="M5 11a7 7 0 0 0 14 0"/><path d="M12 18v3.5"/></svg>
+          <span class="stop" aria-hidden="true"></span>
+        </button>
+        <div class="mstat">
+          <div class="l1"><span id="micLbl">Tap to speak</span><span class="bars" id="bars" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span><span class="time" id="time">0:00</span></div>
+          <div class="l2" id="micSub">Dictated text appears in the box above — edit it freely.</div>
+          <span class="tx" id="tx"><span class="spinner" aria-hidden="true"></span><span id="txTxt"></span></span>
+        </div>
+      </div>
       <div class="ft">
-        <button class="btn" id="clear">Clear</button>
-        <span id="asrInfo"></span>
+        <span class="count" id="srcCount">0 characters</span>
+        <span class="sp"></span>
+        <button class="btn primary" id="go" type="button" title="Translate (Ctrl/⌘+Enter)">Translate</button>
       </div>
     </section>
 
-    <section class="card">
-      <div class="hd">
-        <b id="tgtLbl">Cymraeg</b>
-        <span class="meta" id="tgtMeta"></span>
-      </div>
-      <textarea id="tgt" placeholder="Translation appears here — you can edit it."></textarea>
+    <section class="panel tgt" id="tgtPanel" aria-label="Translation" aria-busy="false">
+      <label for="tgt" class="sr">Translation (editable)</label>
+      <textarea id="tgt" spellcheck="true"></textarea>
+      <div class="tgt-empty" id="tgtEmpty">Translation</div>
       <div class="ft">
-        <button class="btn" id="copy">Copy</button>
+        <span class="busy-lbl">Translating…</span>
+        <span class="count" id="tgtCount"></span>
         <span id="tInfo"></span>
+        <span class="sp"></span>
+        <button class="btn" id="copy" type="button" aria-label="Copy translation">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+          <span id="copyTxt">Copy</span>
+        </button>
       </div>
     </section>
   </div>
 
-  <details id="settings">
-    <summary>Backend settings</summary>
-    <div class="cfg">
-      <label for="tUrl">Translation API base URL</label>
-      <input id="tUrl" placeholder="https://translate.example.com">
-      <button class="btn" data-test="t">Test</button>
-
-      <label for="aUrl">Speech (vLLM Whisper) base URL</label>
-      <input id="aUrl" placeholder="https://asr.example.com">
-      <button class="btn" data-test="a">Test</button>
-
-      <label for="aModel">Whisper model</label>
-      <input id="aModel" placeholder="auto-detected from /v1/models">
-      <span></span>
-
-      <label for="aLang">Speech language hint</label>
-      <input id="aLang" placeholder="en" title="Leave blank to follow the source language">
-      <span></span>
-    </div>
-    <p class="note">Both URLs must be HTTPS when this page is served from GitHub Pages. Settings are kept in this browser only.
-      <span class="warn">distil-whisper/distil-medium.en only recognises English speech; Welsh dictation needs a multilingual Whisper model.</span></p>
-  </details>
+  <div class="tips" aria-hidden="true">
+    <span><kbd>Space</kbd> or <kbd>Ctrl</kbd>+<kbd>M</kbd> start/stop mic</span>
+    <span><kbd>Ctrl</kbd>/<kbd>⌘</kbd>+<kbd>Enter</kbd> translate now</span>
+    <span>Both boxes are editable</span>
+  </div>
+  <div class="sr" aria-live="polite" id="live"></div>
 </main>
+
+<div class="toasts" id="toasts" role="status" aria-live="polite"></div>
+
+<dialog id="settings" aria-labelledby="setTitle">
+  <form method="dialog">
+    <div class="dlg-hd"><h2 id="setTitle">Settings</h2><span class="sp"></span>
+      <button class="icon-btn" value="close" aria-label="Close settings"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
+    </div>
+  </form>
+  <div class="dlg-bd">
+    <label class="switch"><input type="checkbox" id="auto" checked> Translate automatically as I type or speak</label>
+    <div class="field">
+      <label for="tUrl">Translation API base URL</label>
+      <div class="row"><input id="tUrl" inputmode="url" autocomplete="off" spellcheck="false" placeholder="https://translate.example.com"><button class="btn" type="button" data-test="t">Test</button></div>
+      <div class="svc" id="svcT"><span class="d"></span><span>Not checked</span></div>
+    </div>
+    <div class="field">
+      <label for="aUrl">Speech (Whisper) base URL</label>
+      <div class="row"><input id="aUrl" inputmode="url" autocomplete="off" spellcheck="false" placeholder="https://asr.example.com"><button class="btn" type="button" data-test="a">Test</button></div>
+      <div class="svc" id="svcA"><span class="d"></span><span>Not checked</span></div>
+    </div>
+    <div class="field">
+      <label for="aModel">Whisper model</label>
+      <input id="aModel" autocomplete="off" spellcheck="false" placeholder="auto-detected from /v1/models">
+    </div>
+    <div class="field">
+      <label for="aLang">Speech language hint</label>
+      <input id="aLang" autocomplete="off" spellcheck="false" placeholder="follows source language">
+      <div class="help">Leave blank to follow the source language.</div>
+    </div>
+    <p class="note">Settings are kept in this browser only. URLs can also be set with <code>?api=…&amp;asr=…</code>. When this page is served over HTTPS, both URLs must be HTTPS too.
+      Models ending in <code>.en</code> (such as distil-whisper/distil-medium.en) recognise English speech only; Welsh dictation needs a multilingual Whisper model.</p>
+  </div>
+</dialog>
 
 <script>
 const $ = s => document.querySelector(s);
 const NAMES = { en: "English", cy: "Cymraeg" };
+const other = l => l === "en" ? "cy" : "en";
 const LS = k => { try { return localStorage.getItem("cy." + k) } catch { return null } };
 const SS = (k, v) => { try { localStorage.setItem("cy." + k, v) } catch {} };
 const qs = new URLSearchParams(location.search);
@@ -161,96 +347,206 @@ const cfg = {
 for (const k of Object.keys(cfg)) {
   const el = $("#" + k); el.value = cfg[k];
   el.addEventListener("change", () => {
-    cfg[k] = k.endsWith("Url") ? normUrl(el.value) : el.value.trim();
-    el.value = cfg[k]; SS(k, cfg[k]); checkAll();
+    // a cleared URL falls back to the dev deployment (same as on load)
+    cfg[k] = k.endsWith("Url") ? normUrl(el.value) || (k === "tUrl" ? DEFAULT_API : DEFAULT_API + "/asr") : el.value.trim();
+    el.value = cfg[k]; SS(k, cfg[k]); checkAll(); updHint();
   });
 }
-if (!cfg.tUrl || !cfg.aUrl) $("#settings").open = true;
+const autoEl = $("#auto");
+autoEl.checked = LS("auto") !== "0";
+autoEl.addEventListener("change", () => { SS("auto", autoEl.checked ? "1" : "0"); if (autoEl.checked) scheduleTranslate(0); });
 
-let dir = "en-cy";
-const src = $("#src"), tgt = $("#tgt");
+const src = $("#src"), tgt = $("#tgt"), dlg = $("#settings");
+const englishOnly = () => /\.en$/.test(cfg.aModel || "distil-whisper/distil-medium.en");
 
-function showErr(msg) { const e = $("#err"); e.textContent = msg; e.style.display = msg ? "block" : "none"; }
-function setDot(id, state, title) { const d = $(id + " .dot"); d.className = "dot " + state; $(id).title = title || ""; }
-
-function setDir(d) {
-  dir = d; cancelTranslate(); // an in-flight result for the old direction must not land
-  document.querySelectorAll("#dir button").forEach(b => b.classList.toggle("on", b.dataset.d === d));
-  const [s, t] = d.split("-");
-  $("#srcLbl").textContent = NAMES[s]; $("#tgtLbl").textContent = NAMES[t];
-  $("#aLang").placeholder = s;
+function openSettings(focusId) {
+  if (!dlg.open) { try { dlg.showModal(); } catch { dlg.setAttribute("open", ""); } }
+  if (focusId) $(focusId)?.focus();
 }
-document.querySelectorAll("#dir button").forEach(b => b.onclick = () => { setDir(b.dataset.d); scheduleTranslate(0); });
-$("#swap").onclick = () => {
-  const a = src.value; src.value = tgt.value; tgt.value = a;
-  setDir(dir === "en-cy" ? "cy-en" : "en-cy"); updMeta();
+$("#gear").onclick = () => openSettings();
+$("#pill").onclick = () => openSettings();
+
+// ---------- toasts / announcements ----------
+function toast(msg, kind = "", ms = 6000) {
+  const t = document.createElement("div");
+  t.className = "toast " + kind; t.setAttribute("role", kind === "err" ? "alert" : "status");
+  const span = document.createElement("span"); span.textContent = msg;
+  const x = document.createElement("button"); x.type = "button"; x.textContent = "×"; x.setAttribute("aria-label", "Dismiss");
+  x.onclick = () => t.remove();
+  t.append(span, x); $("#toasts").append(t);
+  while ($("#toasts").children.length > 3) $("#toasts").firstChild.remove();
+  setTimeout(() => t.remove(), ms);
+}
+const announce = m => { $("#live").textContent = ""; setTimeout(() => $("#live").textContent = m, 30); };
+
+// ---------- languages ----------
+// state.src: "auto" | "en" | "cy"; state.tgt: "en" | "cy"; detected: language the server detected (auto mode)
+const state = { src: LS("src") || "auto", tgt: LS("tgt") || "cy", detected: null };
+if (!["auto", "en", "cy"].includes(state.src)) state.src = "auto";
+if (!NAMES[state.tgt]) state.tgt = "cy";
+if (state.src === state.tgt) state.tgt = other(state.src);
+
+const effSrc = () => state.src === "auto" ? state.detected : state.src; // may be null (not yet detected)
+
+function renderLang() {
+  $("#srcLang").value = state.src; $("#tgtLang").value = state.tgt;
+  const autoOpt = $("#srcLang option[value=auto]");
+  autoOpt.textContent = state.src === "auto" && state.detected ? NAMES[state.detected] : "Detect language"; // the "Detected: …" chip explains it
+  const det = $("#detected");
+  det.classList.toggle("on", state.src === "auto" && !!state.detected);
+  det.textContent = state.detected ? "Detected: " + NAMES[state.detected] : "";
+  $("#tgtEmpty").textContent = "Translation" + (state.src === "auto" && !state.detected ? "" : " · " + NAMES[state.tgt]);
+  tgt.lang = state.tgt; src.lang = effSrc() || "";
+  SS("src", state.src); SS("tgt", state.tgt);
+  updHint();
+}
+function setLang(s, t, { keepDetected = false } = {}) {
+  cancelTranslate(); // an in-flight result for the old direction must not land
+  state.src = s; state.tgt = t;
+  if (!keepDetected || s !== "auto") state.detected = null;
+  renderLang();
+}
+$("#srcLang").onchange = e => {
+  const s = e.target.value;
+  setLang(s, s === "auto" ? state.tgt : (s === state.tgt ? other(s) : state.tgt));
+  scheduleTranslate(0);
 };
-$("#clear").onclick = () => { src.value = ""; tgt.value = ""; updMeta(); };
-$("#copy").onclick = async () => {
-  try { await navigator.clipboard.writeText(tgt.value); $("#tInfo").textContent = "Copied"; }
-  catch { tgt.select(); $("#tInfo").textContent = "Copy blocked — press Ctrl/⌘+C"; }
+$("#tgtLang").onchange = e => {
+  const t = e.target.value;
+  // in Detect mode the server picks the other language; choosing a target pins the source to the opposite one
+  if (state.src === "auto" || state.src === t) setLang(other(t), t); else setLang(state.src, t);
+  scheduleTranslate(0);
+};
+$("#swap").onclick = () => {
+  const s = effSrc() || other(state.tgt);
+  const a = src.value; src.value = tgt.value; tgt.value = a;
+  setLang(state.tgt, s);
+  const b = $("#swap"); b.classList.toggle("spin");
+  updMeta(); scheduleTranslate(0);
 };
 
-function updMeta() { $("#srcMeta").textContent = src.value.length + " chars"; }
+// ---------- editor helpers ----------
+const plural = (n, w) => `${n.toLocaleString()} ${w}${n === 1 ? "" : "s"}`;
+function updMeta() {
+  $("#srcCount").textContent = plural(src.value.length, "character");
+  $("#tgtCount").textContent = tgt.value ? plural(tgt.value.length, "character") : "";
+  $("#clear").classList.toggle("on", !!src.value);
+  $("#empty").hidden = !!src.value;
+  $("#tgtEmpty").style.display = tgt.value ? "none" : "";
+  $("#copy").disabled = !tgt.value;
+}
+$("#clear").onclick = () => {
+  cancelTranslate(); src.value = ""; tgt.value = ""; $("#tInfo").textContent = "";
+  if (state.src === "auto") { state.detected = null; renderLang(); }
+  updMeta(); src.focus();
+};
+tgt.addEventListener("input", updMeta);
+document.querySelectorAll("[data-ex]").forEach(b => b.onclick = () => {
+  if (state.src !== "auto") setLang("auto", state.tgt);
+  src.value = b.dataset.ex; updMeta(); translate(); src.focus();
+});
+
+let copyTimer;
+$("#copy").onclick = async () => {
+  try { await navigator.clipboard.writeText(tgt.value); }
+  catch { tgt.focus(); tgt.select(); toast("Copy was blocked by the browser — press Ctrl/⌘+C."); return; }
+  const b = $("#copy"); b.classList.add("done"); $("#copyTxt").textContent = "Copied"; announce("Translation copied");
+  clearTimeout(copyTimer); copyTimer = setTimeout(() => { b.classList.remove("done"); $("#copyTxt").textContent = "Copy"; }, 1600);
+};
 
 // ---------- translation ----------
 let tTimer = null, tSeq = 0, tCtl = null;
 function scheduleTranslate(ms = 900) {
-  if (!$("#auto").checked) return;
+  if (!autoEl.checked) return;
   clearTimeout(tTimer); tTimer = setTimeout(translate, ms);
 }
 src.addEventListener("input", () => { updMeta(); scheduleTranslate(); });
 $("#go").onclick = () => translate();
 
-function cancelTranslate() { ++tSeq; tCtl?.abort(); tCtl = null; $("#spin").style.display = "none"; }
+function setBusy(on) { $("#tgtPanel").classList.toggle("busy", on); $("#tgtPanel").setAttribute("aria-busy", on); }
+function cancelTranslate() { clearTimeout(tTimer); ++tSeq; tCtl?.abort(); tCtl = null; setBusy(false); }
 
 async function translate() {
+  clearTimeout(tTimer);
   const text = src.value.trim();
-  if (!text) { cancelTranslate(); tgt.value = ""; $("#tInfo").textContent = ""; return; }
-  if (!cfg.tUrl) { showErr("Set the Translation API URL in Backend settings."); $("#settings").open = true; return; }
-  if (urlErr(cfg.tUrl)) { showErr("Translation API URL: " + urlErr(cfg.tUrl)); $("#settings").open = true; return; }
+  if (!text) { cancelTranslate(); tgt.value = ""; $("#tInfo").textContent = ""; updMeta(); return; }
+  if (!cfg.tUrl) { toast("Set the Translation API URL in Settings.", "err"); openSettings("#tUrl"); return; }
+  if (urlErr(cfg.tUrl)) { toast("Translation API URL: " + urlErr(cfg.tUrl), "err"); openSettings("#tUrl"); return; }
   const seq = ++tSeq; tCtl?.abort(); tCtl = new AbortController();
-  const [s, t] = dir.split("-");
-  $("#spin").style.display = "inline-block"; $("#tInfo").textContent = "Translating…";
+  const auto = state.src === "auto";
+  // Detect mode: send source "auto" with no target; the server detects and translates to the other language
+  const body = auto ? { text, source: "auto" } : { text, source: state.src, target: state.tgt };
+  setBusy(true);
   const t0 = performance.now();
   try {
     const r = await fetch(cfg.tUrl + "/translate", {
       method: "POST", headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ text, source: s, target: t }), signal: tCtl.signal,
+      body: JSON.stringify(body), signal: tCtl.signal,
     });
     if (!r.ok) throw new Error("HTTP " + r.status + " " + (await r.text()).slice(0, 200));
     const d = await r.json();
     if (seq !== tSeq) return; // a newer request superseded this one
+    if (auto && NAMES[d.source]) {
+      const changed = state.detected !== d.source;
+      state.detected = d.source; state.tgt = NAMES[d.target] ? d.target : other(d.source);
+      renderLang();
+      if (changed) announce("Detected " + NAMES[d.source]);
+    }
     tgt.value = d.translation ?? "";
-    $("#tInfo").textContent = `${((performance.now() - t0) / 1000).toFixed(1)} s` + (d.model ? ` · ${d.model}` : "");
-    showErr("");
+    const secs = typeof d.seconds === "number" ? d.seconds : (performance.now() - t0) / 1000;
+    $("#tInfo").textContent = `${secs.toFixed(1)} s` + (d.model ? ` · ${d.model}` : "");
+    $("#tInfo").title = `Round trip ${((performance.now() - t0) / 1000).toFixed(2)} s` + (d.tokens ? ` · ${d.tokens} tokens` : "");
+    updMeta();
+    if (health.t !== "ok") check("t");
   } catch (e) {
     if (e.name === "AbortError" || seq !== tSeq) return;
-    $("#tInfo").textContent = ""; showErr("Translation failed: " + e.message);
-  } finally { if (seq === tSeq) $("#spin").style.display = "none"; }
+    toast("Translation failed: " + e.message, "err");
+    check("t");
+  } finally { if (seq === tSeq) { setBusy(false); tCtl = null; } }
 }
 
 // ---------- health ----------
+const health = { t: "wait", a: "wait" };
+function renderPill() {
+  const p = $("#pill"), { t, a } = health;
+  let cls, txt;
+  if (t === "wait" || a === "wait") { cls = "wait"; txt = "Checking…"; }
+  else if (t !== "ok") { cls = "err"; txt = "Backend unreachable"; }
+  else if (a !== "ok") { cls = "warn"; txt = "Speech offline"; }
+  else { cls = "ok"; txt = "Connected"; }
+  p.className = "pill " + cls; $("#pillTxt").textContent = txt;
+  p.setAttribute("aria-label", `Connection status: ${txt}. Open settings`);
+}
+function setSvc(kind, st, msg) {
+  health[kind] = st;
+  const el = $(kind === "t" ? "#svcT" : "#svcA");
+  el.className = "svc " + st; el.lastElementChild.textContent = msg;
+  renderPill();
+}
+const hSeq = { t: 0, a: 0 };
 async function check(kind) {
-  const id = kind === "t" ? "#stT" : "#stA";
-  const base = kind === "t" ? cfg.tUrl : cfg.aUrl;
-  if (!base) { setDot(id, "", "not configured"); return false; }
-  if (urlErr(base)) { setDot(id, "err", urlErr(base)); return false; }
-  setDot(id, "wait");
+  const base = kind === "t" ? cfg.tUrl : cfg.aUrl, seq = ++hSeq[kind];
+  if (!base) { setSvc(kind, "err", "Not configured"); return false; }
+  if (urlErr(base)) { setSvc(kind, "err", urlErr(base)); return false; }
+  setSvc(kind, "wait", "Checking…");
   try {
     const r = await fetch(base + (kind === "t" ? "/health" : "/v1/models"), { signal: AbortSignal.timeout(8000) });
     if (!r.ok) throw new Error("HTTP " + r.status);
     const d = await r.json();
-    if (kind === "a" && !cfg.aModel && d.data?.[0]?.id) { cfg.aModel = d.data[0].id; $("#aModel").value = cfg.aModel; }
-    setDot(id, "ok", kind === "t" ? d.model : d.data?.map(m => m.id).join(", "));
+    if (seq !== hSeq[kind]) return true;
+    if (kind === "a" && !cfg.aModel && d.data?.[0]?.id) { cfg.aModel = d.data[0].id; $("#aModel").value = cfg.aModel; updHint(); }
+    setSvc(kind, "ok", "Connected · " + (kind === "t" ? (d.model || "ok") : (d.data?.map(m => m.id).join(", ") || "ok")));
     return true;
-  } catch (e) { setDot(id, "err", e.message); return false; }
+  } catch (e) {
+    if (seq === hSeq[kind]) setSvc(kind, "err", "Unreachable — " + (e.name === "TimeoutError" ? "timed out" : e.message));
+    return false;
+  }
 }
 function checkAll() { check("t"); check("a"); }
 document.querySelectorAll("[data-test]").forEach(b => b.onclick = async () => {
-  b.textContent = "…"; const ok = await check(b.dataset.test); b.textContent = ok ? "✓ OK" : "✗ Failed";
+  b.disabled = true; b.textContent = "…"; const ok = await check(b.dataset.test);
+  b.disabled = false; b.textContent = ok ? "✓ OK" : "✗ Failed"; setTimeout(() => b.textContent = "Test", 2500);
 });
-checkAll();
 
 // ---------- live transcription ----------
 // Capture PCM with an AudioWorklet, cut segments on pauses (or every MAX_SEG s),
@@ -258,16 +554,66 @@ checkAll();
 const RATE = 16000, MAX_SEG = 8, MIN_SEG = 0.6, SIL_MS = 650, SPEECH_RMS = 0.012;
 let ac, stream, node, live = false, starting = false;
 let buf = [], bufLen = 0, voiced = 0, silentMs = 0, queue = Promise.resolve(), pending = 0;
+let tStart = 0, clockTimer = null, micError = "";
 
 const worklet = `class P extends AudioWorkletProcessor{process(i){const c=i[0][0];if(c)this.port.postMessage(c.slice(0));return true}}registerProcessor("p",P)`;
 
-$("#mic").onclick = () => live ? stopMic() : starting ? null : startMic();
+const micBtn = $("#mic"), bars = [...document.querySelectorAll("#bars i")];
+micBtn.onclick = toggleMic;
+function toggleMic() { live ? stopMic() : starting ? null : startMic(); }
+
+function renderMic() {
+  const dock = $("#dock"), lbl = $("#micLbl"), sub = $("#micSub");
+  dock.classList.toggle("live", live);
+  micBtn.classList.toggle("live", live);
+  micBtn.classList.toggle("blocked", !live && !!micError);
+  micBtn.setAttribute("aria-pressed", live);
+  micBtn.setAttribute("aria-label", live ? "Stop dictation" : "Start dictation");
+  sub.classList.toggle("err", !live && !!micError);
+  if (starting) { lbl.textContent = "Starting microphone…"; sub.textContent = "Allow microphone access if your browser asks."; }
+  else if (live) { lbl.textContent = "Listening"; sub.textContent = "Pause briefly between phrases. Tap to stop."; }
+  else if (micError) { lbl.textContent = "Microphone unavailable"; sub.textContent = micError; }
+  else if (pending) { lbl.textContent = "Finishing up…"; sub.textContent = "Adding your last words to the box."; }
+  else { lbl.textContent = "Tap to speak"; sub.textContent = "Dictated text appears in the box above — edit it freely."; }
+  $("#tx").classList.toggle("on", pending > 0);
+  $("#txTxt").textContent = pending ? `Transcribing ${plural(pending, "segment")}…` : "";
+}
+
+function micErrorText(e) {
+  const n = e?.name || "";
+  if (!window.isSecureContext || !navigator.mediaDevices?.getUserMedia) return "Dictation needs a secure page (https:// or localhost). Open this page over HTTPS.";
+  if (n === "NotAllowedError" || n === "SecurityError") return "Microphone access is blocked. Click the lock/site icon in the address bar, allow Microphone, then tap the mic again.";
+  if (n === "NotFoundError" || n === "OverconstrainedError") return "No microphone was found. Plug one in or check your system sound settings, then try again.";
+  if (n === "NotReadableError" || n === "AbortError") return "Your microphone is in use by another app. Close it there and try again.";
+  return "Couldn't start the microphone (" + (e?.message || n || "unknown error") + ").";
+}
+
+function updHint() {
+  const h = $("#hint"), s = effSrc();
+  if (s === "cy" && englishOnly()) {
+    h.innerHTML = "";
+    h.append("Dictation understands English speech only for now. Type Welsh, or ");
+    if (state.src === "cy") {
+      const b = document.createElement("button"); b.type = "button";
+      b.textContent = "switch to Detect language";
+      b.onclick = () => { setLang("auto", state.tgt); scheduleTranslate(0); };
+      h.append(b, " to dictate English.");
+    } else h.append("speak English.");
+    h.classList.add("on");
+  } else h.classList.remove("on");
+}
 
 async function startMic() {
-  if (!cfg.aUrl) { showErr("Set the Speech API URL in Backend settings."); $("#settings").open = true; return; }
-  if (urlErr(cfg.aUrl)) { showErr("Speech API URL: " + urlErr(cfg.aUrl)); $("#settings").open = true; return; }
-  starting = true;
+  if (!cfg.aUrl) { toast("Set the Speech API URL in Settings.", "err"); openSettings("#aUrl"); return; }
+  if (urlErr(cfg.aUrl)) { toast("Speech API URL: " + urlErr(cfg.aUrl), "err"); openSettings("#aUrl"); return; }
+  // explicit Welsh source + English-only model would send English transcripts labelled as Welsh
+  if (state.src === "cy" && englishOnly()) {
+    setLang("auto", state.tgt);
+    toast("Dictation is English-only for now, so the source was switched to Detect language.");
+  }
+  starting = true; micError = ""; renderMic();
   try {
+    if (!navigator.mediaDevices?.getUserMedia) throw Object.assign(new Error("getUserMedia unavailable"), { name: "InsecureContext" });
     // create + resume the context inside the click gesture (Safari/iOS start it suspended otherwise)
     ac = new AudioContext(); const resumed = ac.resume();
     stream = await navigator.mediaDevices.getUserMedia({ audio: { channelCount: 1, echoCancellation: true, noiseSuppression: true, autoGainControl: true } });
@@ -280,28 +626,31 @@ async function startMic() {
     await resumed; if (ac.state !== "running") await ac.resume();
   } catch (e) {
     stream?.getTracks().forEach(t => t.stop()); ac?.close(); stream = ac = node = null; starting = false;
-    showErr("Microphone unavailable: " + e.message); return;
+    micError = micErrorText(e); renderMic(); announce("Microphone unavailable. " + micError); return;
   }
   starting = false;
   live = true; buf = []; bufLen = 0; voiced = 0; silentMs = 0;
-  $("#mic").classList.add("live"); $("#micTxt").textContent = "Stop";
-  $("#interim").textContent = "Listening…"; showErr("");
-  if (dir.startsWith("cy") && /\.en$/.test(cfg.aModel)) $("#asrInfo").innerHTML = '<span class="warn">English-only speech model</span>';
+  tStart = performance.now(); $("#time").textContent = "0:00";
+  clearInterval(clockTimer);
+  clockTimer = setInterval(() => { const s = Math.floor((performance.now() - tStart) / 1000); $("#time").textContent = `${Math.floor(s / 60)}:${String(s % 60).padStart(2, "0")}`; }, 250);
+  renderMic(); announce("Listening");
 }
 
 function stopMic() {
   live = false; flush(true); // flush before closing: it reads ac.sampleRate
   if (node) { node.port.onmessage = null; node.disconnect(); }
   stream?.getTracks().forEach(t => t.stop()); ac?.close();
-  $("#mic").classList.remove("live"); $("#micTxt").textContent = "Start mic";
-  $("#lvl").style.width = "0"; if (!pending) $("#interim").textContent = "";
+  clearInterval(clockTimer); bars.forEach(b => b.style.height = "4px");
+  renderMic(); announce("Stopped listening");
 }
 
+let lvlHist = new Array(7).fill(0);
 function onFrame(f) {
   if (!live) return; // late worklet messages after stop must not leak into the next session
   let s = 0; for (let i = 0; i < f.length; i++) s += f[i] * f[i];
   const rms = Math.sqrt(s / f.length), ms = f.length / ac.sampleRate * 1000;
-  $("#lvl").style.width = Math.min(100, rms * 900) + "%";
+  lvlHist.push(Math.min(1, rms * 9)); lvlHist.shift();
+  bars.forEach((b, i) => b.style.height = (4 + lvlHist[i] * 18) + "px");
   buf.push(f); bufLen += f.length;
   if (rms > SPEECH_RMS) { voiced += ms; silentMs = 0; } else silentMs += ms;
   const secs = bufLen / ac.sampleRate;
@@ -315,11 +664,18 @@ function flush(final) {
   for (const b of buf) { pcm.set(b, o); o += b.length; }
   const wav = encodeWav(resample(pcm, ac.sampleRate, RATE), RATE);
   buf = []; bufLen = 0; voiced = 0; silentMs = 0;
-  pending++; $("#interim").textContent = `Transcribing… (${pending})`;
+  pending++; renderMic();
   // keep segment order: chain requests
-  queue = queue.then(() => transcribe(wav)).finally(() => {
-    pending--; $("#interim").textContent = pending ? `Transcribing… (${pending})` : live ? "Listening…" : "";
-  });
+  queue = queue.then(() => transcribe(wav)).finally(() => { pending--; renderMic(); });
+}
+
+let addedTimer, flashTimer;
+function showAdded(text) {
+  const a = $("#added"); a.innerHTML = "";
+  const s = document.createElement("span"); s.textContent = "+ " + (text.length > 60 ? text.slice(0, 57) + "…" : text);
+  a.append(s); clearTimeout(addedTimer); addedTimer = setTimeout(() => a.innerHTML = "", 2500);
+  src.classList.add("flash"); clearTimeout(flashTimer);
+  flashTimer = setTimeout(() => src.classList.remove("flash"), 120);
 }
 
 async function transcribe(wav) {
@@ -327,23 +683,24 @@ async function transcribe(wav) {
   fd.append("file", wav, "seg.wav");
   fd.append("model", cfg.aModel || "distil-whisper/distil-medium.en");
   fd.append("response_format", "json"); fd.append("temperature", "0");
-  // English-only models (*.en) reject other language codes
-  const lang = /\.en$/.test(cfg.aModel) ? "en" : cfg.aLang || dir.split("-")[0];
-  fd.append("language", lang);
-  const t0 = performance.now();
+  // English-only models (*.en) reject other language codes; otherwise follow the hint / source language
+  // (in Detect mode with nothing detected yet, omit it and let Whisper detect)
+  const lang = englishOnly() ? "en" : cfg.aLang || effSrc();
+  if (lang) fd.append("language", lang);
   try {
     const r = await fetch(cfg.aUrl + "/v1/audio/transcriptions", { method: "POST", body: fd });
     if (!r.ok) throw new Error("HTTP " + r.status + " " + (await r.text()).slice(0, 200));
     const text = ((await r.json()).text || "").trim();
-    $("#asrInfo").textContent = `last segment ${((performance.now() - t0) / 1000).toFixed(1)} s`;
     if (!text || /^\[.*\]$|^\(.*\)$/.test(text)) return;
     const sep = src.value && !/\s$/.test(src.value) ? " " : "";
     // keep the caret/selection if the user is editing while transcripts arrive
     const typing = document.activeElement === src, a = src.selectionStart, b = src.selectionEnd, atEnd = b === src.value.length;
     src.value += sep + text;
     if (typing && !atEnd) src.setSelectionRange(a, b); else src.scrollTop = src.scrollHeight;
+    showAdded(text); announce("Added: " + text);
     updMeta(); scheduleTranslate(400);
-  } catch (e) { showErr("Transcription failed: " + e.message); }
+    if (health.a !== "ok") check("a");
+  } catch (e) { toast("Transcription failed: " + e.message, "err"); check("a"); }
 }
 
 function resample(x, from, to) {
@@ -367,7 +724,18 @@ function encodeWav(x, rate) {
   return new Blob([v], { type: "audio/wav" });
 }
 
-setDir("en-cy"); updMeta();
+// ---------- keyboard ----------
+const isTyping = el => el && (el.isContentEditable || /^(INPUT|TEXTAREA|SELECT|BUTTON|A|SUMMARY)$/.test(el.tagName));
+document.addEventListener("keydown", e => {
+  if (dlg.open) return;
+  if ((e.ctrlKey || e.metaKey) && e.key === "Enter") { e.preventDefault(); translate(); return; }
+  if (e.ctrlKey && !e.metaKey && !e.altKey && (e.key === "m" || e.key === "M")) { e.preventDefault(); toggleMic(); return; }
+  if (e.key === " " && !e.repeat && !e.ctrlKey && !e.metaKey && !e.altKey && !isTyping(document.activeElement)) { e.preventDefault(); toggleMic(); }
+});
+
+// ---------- init ----------
+renderLang(); updMeta(); renderMic(); renderPill(); checkAll();
+if (!cfg.tUrl || !cfg.aUrl) openSettings();
 </script>
 </body>
 </html>
