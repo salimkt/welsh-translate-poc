@@ -1,0 +1,23 @@
+[Unit]
+Description=Welsh<->English translator (Gemma 4 31B, HF transformers) in screen "welsh-mt", port 10042
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=forking
+User=cloudadmin
+Group=cloudadmin
+WorkingDirectory=/home/cloudadmin/welsh-mt
+Environment=CUDA_VISIBLE_DEVICES=1
+# 8bit ~32GB VRAM (default) | 4bit ~19GB | none = bf16 ~60GB, ~3x faster
+Environment=QUANT=8bit
+Environment=HF_HUB_OFFLINE=1
+ExecStartPre=-/usr/bin/screen -S welsh-mt -X quit
+ExecStart=/usr/bin/screen -dmS welsh-mt -L -Logfile /home/cloudadmin/welsh-mt/screen.log /home/cloudadmin/welsh-mt/run.sh
+ExecStop=/usr/bin/screen -S welsh-mt -X quit
+Restart=on-failure
+RestartSec=15
+TimeoutStartSec=60
+
+[Install]
+WantedBy=multi-user.target

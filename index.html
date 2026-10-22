@@ -1,0 +1,373 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Cyfieithu · Welsh Translate</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='7' fill='%23c8102e'/><text x='16' y='22' font-size='16' text-anchor='middle' fill='white' font-family='sans-serif' font-weight='700'>cy</text></svg>">
+<style>
+:root{color-scheme:light dark;
+  --bg:#f6f6f4;--panel:#fff;--ink:#1b1d21;--muted:#6a6f78;--line:#e3e3df;
+  --accent:#c8102e;--accent-ink:#fff;--ok:#1f8a4c;--warn:#b26b00;--err:#c0392b;
+  --field:#fbfbfa;--shadow:0 1px 2px rgba(0,0,0,.05),0 4px 16px rgba(0,0,0,.04);
+}
+@media (prefers-color-scheme:dark){:root{
+  --bg:#141518;--panel:#1c1e22;--ink:#e9eaec;--muted:#9097a1;--line:#2d3036;
+  --accent:#e0344f;--field:#17191c;--shadow:none;
+}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.5 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+header{display:flex;flex-wrap:wrap;align-items:center;gap:12px;padding:14px 20px;border-bottom:1px solid var(--line);background:var(--panel)}
+header h1{font-size:17px;margin:0;font-weight:650;letter-spacing:-.01em}
+header .sub{color:var(--muted);font-size:13px}
+header .sp{flex:1}
+.dot{width:8px;height:8px;border-radius:50%;background:var(--muted);display:inline-block;margin-right:6px}
+.dot.ok{background:var(--ok)}.dot.err{background:var(--err)}.dot.wait{background:var(--warn)}
+.status{font-size:13px;color:var(--muted);display:flex;gap:14px;align-items:center}
+main{max-width:1200px;margin:0 auto;padding:20px 16px 40px}
+.bar{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-bottom:14px}
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:9px;overflow:hidden;background:var(--panel)}
+.seg button{border:0;background:none;padding:7px 14px;color:var(--ink);cursor:pointer;font:inherit;font-size:14px}
+.seg button.on{background:var(--ink);color:var(--bg)}
+button.btn{border:1px solid var(--line);background:var(--panel);color:var(--ink);padding:7px 14px;border-radius:9px;font:inherit;font-size:14px;cursor:pointer}
+button.btn:hover{border-color:var(--muted)}
+button.primary{background:var(--accent);border-color:var(--accent);color:var(--accent-ink);font-weight:600}
+button.primary:hover{filter:brightness(1.08);border-color:var(--accent)}
+button:disabled{opacity:.5;cursor:not-allowed}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+@media (max-width:820px){.grid{grid-template-columns:1fr}}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow);display:flex;flex-direction:column;min-height:360px}
+.card .hd{display:flex;align-items:center;gap:10px;padding:10px 14px;border-bottom:1px solid var(--line)}
+.card .hd b{font-size:14px}
+.card .hd .meta{color:var(--muted);font-size:12.5px;margin-left:auto}
+textarea{flex:1;border:0;outline:0;resize:vertical;min-height:300px;padding:14px;font:inherit;font-size:16.5px;line-height:1.55;background:var(--field);color:var(--ink);border-radius:0 0 14px 14px}
+.card .ft{display:flex;gap:8px;align-items:center;padding:8px 12px;border-top:1px solid var(--line);font-size:13px;color:var(--muted)}
+.mic{display:inline-flex;align-items:center;gap:8px}
+.mic.live{background:var(--accent);border-color:var(--accent);color:#fff}
+.meter{width:70px;height:6px;border-radius:3px;background:var(--line);overflow:hidden}
+.meter i{display:block;height:100%;width:0;background:var(--ok);transition:width .08s}
+.interim{color:var(--muted);font-style:italic;font-size:13px;min-height:1.4em;padding:0 14px 6px}
+details{margin-top:18px;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:10px 14px}
+summary{cursor:pointer;font-weight:600;font-size:14px}
+.cfg{display:grid;grid-template-columns:170px 1fr auto;gap:8px 10px;align-items:center;margin-top:12px}
+@media (max-width:600px){.cfg{grid-template-columns:1fr}}
+.cfg label{font-size:13px;color:var(--muted)}
+.cfg input{width:100%;padding:7px 10px;border:1px solid var(--line);border-radius:8px;background:var(--field);color:var(--ink);font:inherit;font-size:14px}
+.note{font-size:12.5px;color:var(--muted);margin-top:10px}
+.warn{color:var(--warn)}
+.toggle{display:inline-flex;align-items:center;gap:6px;font-size:13.5px;color:var(--muted);cursor:pointer;user-select:none}
+.err-banner{display:none;margin-bottom:12px;padding:9px 14px;border-radius:10px;background:color-mix(in srgb,var(--err) 12%,transparent);color:var(--err);font-size:14px}
+.spin{width:12px;height:12px;border:2px solid var(--line);border-top-color:var(--accent);border-radius:50%;animation:s .7s linear infinite;display:none}
+@keyframes s{to{transform:rotate(360deg)}}
+</style>
+</head>
+<body>
+<header>
+  <h1>Cyfieithu</h1><span class="sub">Welsh ⇄ English · live speech · POC</span>
+  <span class="sp"></span>
+  <div class="status">
+    <span id="stT"><span class="dot"></span>Translate</span>
+    <span id="stA"><span class="dot"></span>Speech</span>
+  </div>
+</header>
+
+<main>
+  <div class="err-banner" id="err"></div>
+
+  <div class="bar">
+    <div class="seg" id="dir">
+      <button data-d="en-cy" class="on">English → Cymraeg</button>
+      <button data-d="cy-en">Cymraeg → English</button>
+    </div>
+    <button class="btn" id="swap" title="Swap direction and texts">⇄ Swap</button>
+    <span class="sp" style="flex:1"></span>
+    <label class="toggle"><input type="checkbox" id="auto" checked> Auto-translate</label>
+    <button class="btn primary" id="go">Translate <span class="spin" id="spin"></span></button>
+  </div>
+
+  <div class="grid">
+    <section class="card">
+      <div class="hd">
+        <b id="srcLbl">English</b>
+        <button class="btn mic" id="mic" title="Live transcription">🎙 <span id="micTxt">Start mic</span></button>
+        <span class="meter"><i id="lvl"></i></span>
+        <span class="meta" id="srcMeta">0 chars</span>
+      </div>
+      <div class="interim" id="interim"></div>
+      <textarea id="src" placeholder="Type, paste, or press “Start mic” to dictate…"></textarea>
+      <div class="ft">
+        <button class="btn" id="clear">Clear</button>
+        <span id="asrInfo"></span>
+      </div>
+    </section>
+
+    <section class="card">
+      <div class="hd">
+        <b id="tgtLbl">Cymraeg</b>
+        <span class="meta" id="tgtMeta"></span>
+      </div>
+      <textarea id="tgt" placeholder="Translation appears here — you can edit it."></textarea>
+      <div class="ft">
+        <button class="btn" id="copy">Copy</button>
+        <span id="tInfo"></span>
+      </div>
+    </section>
+  </div>
+
+  <details id="settings">
+    <summary>Backend settings</summary>
+    <div class="cfg">
+      <label for="tUrl">Translation API base URL</label>
+      <input id="tUrl" placeholder="https://translate.example.com">
+      <button class="btn" data-test="t">Test</button>
+
+      <label for="aUrl">Speech (vLLM Whisper) base URL</label>
+      <input id="aUrl" placeholder="https://asr.example.com">
+      <button class="btn" data-test="a">Test</button>
+
+      <label for="aModel">Whisper model</label>
+      <input id="aModel" placeholder="auto-detected from /v1/models">
+      <span></span>
+
+      <label for="aLang">Speech language hint</label>
+      <input id="aLang" placeholder="en" title="Leave blank to follow the source language">
+      <span></span>
+    </div>
+    <p class="note">Both URLs must be HTTPS when this page is served from GitHub Pages. Settings are kept in this browser only.
+      <span class="warn">distil-whisper/distil-medium.en only recognises English speech; Welsh dictation needs a multilingual Whisper model.</span></p>
+  </details>
+</main>
+
+<script>
+const $ = s => document.querySelector(s);
+const NAMES = { en: "English", cy: "Cymraeg" };
+const LS = k => { try { return localStorage.getItem("cy." + k) } catch { return null } };
+const SS = (k, v) => { try { localStorage.setItem("cy." + k, v) } catch {} };
+const qs = new URLSearchParams(location.search);
+// trim, drop trailing "/", and add https:// when no scheme (a bare host would be fetched relative to this page)
+const normUrl = u => { u = (u || "").trim().replace(/\/+$/, ""); return u && !/^https?:\/\//i.test(u) ? "https://" + u : u; };
+// fetch() on an http:// URL from an https:// page is blocked as mixed content with an opaque "Failed to fetch"
+const urlErr = u => location.protocol === "https:" && /^http:\/\//i.test(u) && !/^http:\/\/(localhost|127\.0\.0\.1|\[::1\])(:|\/|$)/i.test(u)
+  ? "it is http:// but this page is https:// (mixed content is blocked); use an https:// URL" : "";
+
+// config: ?api=…&asr=… overrides, then saved values, then the dev deployment
+const DEFAULT_API = "https://dev.studio.bluemesh.ai/welsh";
+const cfg = {
+  tUrl: normUrl(qs.get("api") || LS("tUrl") || DEFAULT_API),
+  aUrl: normUrl(qs.get("asr") || LS("aUrl") || DEFAULT_API + "/asr"),
+  aModel: LS("aModel") || "",
+  aLang: LS("aLang") || "", // blank = follow the source language
+};
+for (const k of Object.keys(cfg)) {
+  const el = $("#" + k); el.value = cfg[k];
+  el.addEventListener("change", () => {
+    cfg[k] = k.endsWith("Url") ? normUrl(el.value) : el.value.trim();
+    el.value = cfg[k]; SS(k, cfg[k]); checkAll();
+  });
+}
+if (!cfg.tUrl || !cfg.aUrl) $("#settings").open = true;
+
+let dir = "en-cy";
+const src = $("#src"), tgt = $("#tgt");
+
+function showErr(msg) { const e = $("#err"); e.textContent = msg; e.style.display = msg ? "block" : "none"; }
+function setDot(id, state, title) { const d = $(id + " .dot"); d.className = "dot " + state; $(id).title = title || ""; }
+
+function setDir(d) {
+  dir = d; cancelTranslate(); // an in-flight result for the old direction must not land
+  document.querySelectorAll("#dir button").forEach(b => b.classList.toggle("on", b.dataset.d === d));
+  const [s, t] = d.split("-");
+  $("#srcLbl").textContent = NAMES[s]; $("#tgtLbl").textContent = NAMES[t];
+  $("#aLang").placeholder = s;
+}
+document.querySelectorAll("#dir button").forEach(b => b.onclick = () => { setDir(b.dataset.d); scheduleTranslate(0); });
+$("#swap").onclick = () => {
+  const a = src.value; src.value = tgt.value; tgt.value = a;
+  setDir(dir === "en-cy" ? "cy-en" : "en-cy"); updMeta();
+};
+$("#clear").onclick = () => { src.value = ""; tgt.value = ""; updMeta(); };
+$("#copy").onclick = async () => {
+  try { await navigator.clipboard.writeText(tgt.value); $("#tInfo").textContent = "Copied"; }
+  catch { tgt.select(); $("#tInfo").textContent = "Copy blocked — press Ctrl/⌘+C"; }
+};
+
+function updMeta() { $("#srcMeta").textContent = src.value.length + " chars"; }
+
+// ---------- translation ----------
+let tTimer = null, tSeq = 0, tCtl = null;
+function scheduleTranslate(ms = 900) {
+  if (!$("#auto").checked) return;
+  clearTimeout(tTimer); tTimer = setTimeout(translate, ms);
+}
+src.addEventListener("input", () => { updMeta(); scheduleTranslate(); });
+$("#go").onclick = () => translate();
+
+function cancelTranslate() { ++tSeq; tCtl?.abort(); tCtl = null; $("#spin").style.display = "none"; }
+
+async function translate() {
+  const text = src.value.trim();
+  if (!text) { cancelTranslate(); tgt.value = ""; $("#tInfo").textContent = ""; return; }
+  if (!cfg.tUrl) { showErr("Set the Translation API URL in Backend settings."); $("#settings").open = true; return; }
+  if (urlErr(cfg.tUrl)) { showErr("Translation API URL: " + urlErr(cfg.tUrl)); $("#settings").open = true; return; }
+  const seq = ++tSeq; tCtl?.abort(); tCtl = new AbortController();
+  const [s, t] = dir.split("-");
+  $("#spin").style.display = "inline-block"; $("#tInfo").textContent = "Translating…";
+  const t0 = performance.now();
+  try {
+    const r = await fetch(cfg.tUrl + "/translate", {
+      method: "POST", headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ text, source: s, target: t }), signal: tCtl.signal,
+    });
+    if (!r.ok) throw new Error("HTTP " + r.status + " " + (await r.text()).slice(0, 200));
+    const d = await r.json();
+    if (seq !== tSeq) return; // a newer request superseded this one
+    tgt.value = d.translation ?? "";
+    $("#tInfo").textContent = `${((performance.now() - t0) / 1000).toFixed(1)} s` + (d.model ? ` · ${d.model}` : "");
+    showErr("");
+  } catch (e) {
+    if (e.name === "AbortError" || seq !== tSeq) return;
+    $("#tInfo").textContent = ""; showErr("Translation failed: " + e.message);
+  } finally { if (seq === tSeq) $("#spin").style.display = "none"; }
+}
+
+// ---------- health ----------
+async function check(kind) {
+  const id = kind === "t" ? "#stT" : "#stA";
+  const base = kind === "t" ? cfg.tUrl : cfg.aUrl;
+  if (!base) { setDot(id, "", "not configured"); return false; }
+  if (urlErr(base)) { setDot(id, "err", urlErr(base)); return false; }
+  setDot(id, "wait");
+  try {
+    const r = await fetch(base + (kind === "t" ? "/health" : "/v1/models"), { signal: AbortSignal.timeout(8000) });
+    if (!r.ok) throw new Error("HTTP " + r.status);
+    const d = await r.json();
+    if (kind === "a" && !cfg.aModel && d.data?.[0]?.id) { cfg.aModel = d.data[0].id; $("#aModel").value = cfg.aModel; }
+    setDot(id, "ok", kind === "t" ? d.model : d.data?.map(m => m.id).join(", "));
+    return true;
+  } catch (e) { setDot(id, "err", e.message); return false; }
+}
+function checkAll() { check("t"); check("a"); }
+document.querySelectorAll("[data-test]").forEach(b => b.onclick = async () => {
+  b.textContent = "…"; const ok = await check(b.dataset.test); b.textContent = ok ? "✓ OK" : "✗ Failed";
+});
+checkAll();
+
+// ---------- live transcription ----------
+// Capture PCM with an AudioWorklet, cut segments on pauses (or every MAX_SEG s),
+// encode 16 kHz WAV and POST each to the OpenAI-compatible /v1/audio/transcriptions.
+const RATE = 16000, MAX_SEG = 8, MIN_SEG = 0.6, SIL_MS = 650, SPEECH_RMS = 0.012;
+let ac, stream, node, live = false, starting = false;
+let buf = [], bufLen = 0, voiced = 0, silentMs = 0, queue = Promise.resolve(), pending = 0;
+
+const worklet = `class P extends AudioWorkletProcessor{process(i){const c=i[0][0];if(c)this.port.postMessage(c.slice(0));return true}}registerProcessor("p",P)`;
+
+$("#mic").onclick = () => live ? stopMic() : starting ? null : startMic();
+
+async function startMic() {
+  if (!cfg.aUrl) { showErr("Set the Speech API URL in Backend settings."); $("#settings").open = true; return; }
+  if (urlErr(cfg.aUrl)) { showErr("Speech API URL: " + urlErr(cfg.aUrl)); $("#settings").open = true; return; }
+  starting = true;
+  try {
+    // create + resume the context inside the click gesture (Safari/iOS start it suspended otherwise)
+    ac = new AudioContext(); const resumed = ac.resume();
+    stream = await navigator.mediaDevices.getUserMedia({ audio: { channelCount: 1, echoCancellation: true, noiseSuppression: true, autoGainControl: true } });
+    const url = URL.createObjectURL(new Blob([worklet], { type: "text/javascript" }));
+    try { await ac.audioWorklet.addModule(url); } finally { URL.revokeObjectURL(url); }
+    node = new AudioWorkletNode(ac, "p");
+    ac.createMediaStreamSource(stream).connect(node);
+    node.connect(ac.destination); // outputs silence; keeps the graph pulled on Safari
+    node.port.onmessage = e => onFrame(e.data);
+    await resumed; if (ac.state !== "running") await ac.resume();
+  } catch (e) {
+    stream?.getTracks().forEach(t => t.stop()); ac?.close(); stream = ac = node = null; starting = false;
+    showErr("Microphone unavailable: " + e.message); return;
+  }
+  starting = false;
+  live = true; buf = []; bufLen = 0; voiced = 0; silentMs = 0;
+  $("#mic").classList.add("live"); $("#micTxt").textContent = "Stop";
+  $("#interim").textContent = "Listening…"; showErr("");
+  if (dir.startsWith("cy") && /\.en$/.test(cfg.aModel)) $("#asrInfo").innerHTML = '<span class="warn">English-only speech model</span>';
+}
+
+function stopMic() {
+  live = false; flush(true); // flush before closing: it reads ac.sampleRate
+  if (node) { node.port.onmessage = null; node.disconnect(); }
+  stream?.getTracks().forEach(t => t.stop()); ac?.close();
+  $("#mic").classList.remove("live"); $("#micTxt").textContent = "Start mic";
+  $("#lvl").style.width = "0"; if (!pending) $("#interim").textContent = "";
+}
+
+function onFrame(f) {
+  if (!live) return; // late worklet messages after stop must not leak into the next session
+  let s = 0; for (let i = 0; i < f.length; i++) s += f[i] * f[i];
+  const rms = Math.sqrt(s / f.length), ms = f.length / ac.sampleRate * 1000;
+  $("#lvl").style.width = Math.min(100, rms * 900) + "%";
+  buf.push(f); bufLen += f.length;
+  if (rms > SPEECH_RMS) { voiced += ms; silentMs = 0; } else silentMs += ms;
+  const secs = bufLen / ac.sampleRate;
+  if (!voiced && secs > 1.5) { buf = buf.slice(-8); bufLen = buf.reduce((a, b) => a + b.length, 0); return; } // drop leading silence
+  if ((voiced && silentMs > SIL_MS && secs > MIN_SEG) || secs > MAX_SEG) flush();
+}
+
+function flush(final) {
+  if (!bufLen || voiced < 250) { buf = []; bufLen = 0; voiced = 0; silentMs = 0; return; } // nothing spoken: skip (whisper hallucinates on silence)
+  const pcm = new Float32Array(bufLen); let o = 0;
+  for (const b of buf) { pcm.set(b, o); o += b.length; }
+  const wav = encodeWav(resample(pcm, ac.sampleRate, RATE), RATE);
+  buf = []; bufLen = 0; voiced = 0; silentMs = 0;
+  pending++; $("#interim").textContent = `Transcribing… (${pending})`;
+  // keep segment order: chain requests
+  queue = queue.then(() => transcribe(wav)).finally(() => {
+    pending--; $("#interim").textContent = pending ? `Transcribing… (${pending})` : live ? "Listening…" : "";
+  });
+}
+
+async function transcribe(wav) {
+  const fd = new FormData();
+  fd.append("file", wav, "seg.wav");
+  fd.append("model", cfg.aModel || "distil-whisper/distil-medium.en");
+  fd.append("response_format", "json"); fd.append("temperature", "0");
+  // English-only models (*.en) reject other language codes
+  const lang = /\.en$/.test(cfg.aModel) ? "en" : cfg.aLang || dir.split("-")[0];
+  fd.append("language", lang);
+  const t0 = performance.now();
+  try {
+    const r = await fetch(cfg.aUrl + "/v1/audio/transcriptions", { method: "POST", body: fd });
+    if (!r.ok) throw new Error("HTTP " + r.status + " " + (await r.text()).slice(0, 200));
+    const text = ((await r.json()).text || "").trim();
+    $("#asrInfo").textContent = `last segment ${((performance.now() - t0) / 1000).toFixed(1)} s`;
+    if (!text || /^\[.*\]$|^\(.*\)$/.test(text)) return;
+    const sep = src.value && !/\s$/.test(src.value) ? " " : "";
+    // keep the caret/selection if the user is editing while transcripts arrive
+    const typing = document.activeElement === src, a = src.selectionStart, b = src.selectionEnd, atEnd = b === src.value.length;
+    src.value += sep + text;
+    if (typing && !atEnd) src.setSelectionRange(a, b); else src.scrollTop = src.scrollHeight;
+    updMeta(); scheduleTranslate(400);
+  } catch (e) { showErr("Transcription failed: " + e.message); }
+}
+
+function resample(x, from, to) {
+  if (from === to) return x;
+  const ratio = from / to, n = Math.floor(x.length / ratio), y = new Float32Array(n);
+  for (let i = 0; i < n; i++) { // box-filter average: cheap anti-aliasing
+    const a = Math.floor(i * ratio), b = Math.min(x.length, Math.max(a + 1, Math.floor((i + 1) * ratio))); // a+1: upsampling (ratio < 1) must not yield zeros
+    let s = 0; for (let j = a; j < b; j++) s += x[j]; y[i] = s / Math.max(1, b - a);
+  }
+  return y;
+}
+
+function encodeWav(x, rate) {
+  const v = new DataView(new ArrayBuffer(44 + x.length * 2));
+  const w = (o, s) => [...s].forEach((c, i) => v.setUint8(o + i, c.charCodeAt(0)));
+  w(0, "RIFF"); v.setUint32(4, 36 + x.length * 2, true); w(8, "WAVE"); w(12, "fmt ");
+  v.setUint32(16, 16, true); v.setUint16(20, 1, true); v.setUint16(22, 1, true);
+  v.setUint32(24, rate, true); v.setUint32(28, rate * 2, true); v.setUint16(32, 2, true); v.setUint16(34, 16, true);
+  w(36, "data"); v.setUint32(40, x.length * 2, true);
+  for (let i = 0; i < x.length; i++) v.setInt16(44 + i * 2, Math.max(-1, Math.min(1, x[i])) * 0x7fff, true);
+  return new Blob([v], { type: "audio/wav" });
+}
+
+setDir("en-cy"); updMeta();
+</script>
+</body>
+</html>
