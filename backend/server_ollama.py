@@ -1,4 +1,7 @@
-"""Welsh <-> English translation API backed by TranslateGemma 27B on Ollama.
+"""Welsh <-> English translation API backed by an Ollama model (default Qwen 3.6 27B).
+
+MODEL_NAME picks the model; TranslateGemma models get their own prompt template, other
+models the generic translator prompt used in the benchmark (backend/bench.py).
 
 Same API as server.py:
 POST /translate        {"text": "...", "source": "en"|"cy"|"auto", "target": "cy"|"en"}
@@ -16,7 +19,8 @@ from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 
 OLLAMA = os.environ.get("OLLAMA_URL", "http://localhost:11434")
-MODEL_NAME = os.environ.get("MODEL_NAME", "translategemma:27b-it-q8_0")
+MODEL_NAME = os.environ.get("MODEL_NAME", "qwen3.6:27b")
+IS_TG = MODEL_NAME.startswith("translategemma")
 NUM_CTX = int(os.environ.get("NUM_CTX", "4096"))
 MAX_NEW_TOKENS = int(os.environ.get("MAX_NEW_TOKENS", "1024"))
 CORS_ORIGINS = os.environ.get("CORS_ORIGINS", "*").split(",")
@@ -44,17 +48,16 @@ def detect(text):
 
 
 def ollama_chat(messages, max_new_tokens=MAX_NEW_TOKENS, temperature=0.0):
-    r = requests.post(
-        f"{OLLAMA}/api/chat",
-        json={
-            "model": MODEL_NAME,
-            "messages": messages,
-            "stream": False,
-            "keep_alive": -1,  # stay loaded
-            "options": {"temperature": temperature, "num_predict": max_new_tokens, "num_ctx": NUM_CTX},
-        },
-        timeout=600,
-    )
+    body = {
+        "model": MODEL_NAME,
+        "messages": messages,
+        "stream": False,
+        "keep_alive": -1,  # stay loaded
+        "options": {"temperature": temperature, "num_predict": max_new_tokens, "num_ctx": NUM_CTX},
+    }
+    if not IS_TG:
+        body["think"] = False  # reasoning adds latency and didn't help in the benchmark
+    r = requests.post(f"{OLLAMA}/api/chat", json=body, timeout=600)
     r.raise_for_status()
     d = r.json()
     return d["message"]["content"].strip(), d.get("eval_count", 0)
@@ -69,6 +72,19 @@ def tg_prompt(text, src, tgt):
         f"and cultural sensitivities.\nProduce only the {t} translation, without any additional explanations "
         f"or commentary. Please translate the following {s} text into {t}:\n\n\n{text}"
     )
+
+
+def translate_messages(text, src, tgt):
+    if IS_TG:
+        return [{"role": "user", "content": tg_prompt(text, src, tgt)}]
+    s, t = LANGS[src], LANGS[tgt]
+    return [
+        {"role": "system", "content": (
+            f"You are a professional {s} to {t} translator. Translate the user's text into natural, fluent, "
+            f"grammatically correct {t}, preserving meaning, tone, names and numbers. "
+            "Output only the translation, with no notes or explanations.")},
+        {"role": "user", "content": text},
+    ]
 
 
 class TranslateReq(BaseModel):
@@ -90,13 +106,13 @@ def translate(req: TranslateReq):
     if src not in LANGS or tgt not in LANGS or src == tgt:
         raise HTTPException(400, "source/target must be 'en' or 'cy' and differ")
     t0, total = time.time(), 0
-    # translate paragraph by paragraph: keeps formatting and stays in TranslateGemma's comfort zone
+    # translate paragraph by paragraph: keeps formatting and matches the benchmarked setup
     out = []
     for para in req.text.split("\n"):
         if not para.strip():
             out.append(para)
             continue
-        text, n = ollama_chat([{"role": "user", "content": tg_prompt(para.strip(), src, tgt)}], req.max_new_tokens)
+        text, n = ollama_chat(translate_messages(para.strip(), src, tgt), req.max_new_tokens)
         out.append(text)
         total += n
     return {
